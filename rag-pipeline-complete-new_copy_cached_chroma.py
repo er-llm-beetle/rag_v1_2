@@ -4124,7 +4124,28 @@ class RAGPipeline:
                 self.chunk_cache.save_chunks(chunks, file_path)
                 
                 chunk_texts = [chunk['text'] for chunk in chunks]
-                chunk_metadata = [chunk['metadata'].__dict__ for chunk in chunks]
+                # chunk_metadata = [chunk['metadata'].__dict__ for chunk in chunks]
+
+                chunk_metadata = []
+                for chunk in chunks:
+                    if isinstance(chunk['metadata'], dict):
+                        # If already a dict, use as is
+                        chunk_metadata.append(chunk['metadata'])
+                    else:
+                        # Convert ChunkMetadata object to dict
+                        meta_dict = {
+                            'source': chunk['metadata'].source,
+                            'chunk_index': chunk['metadata'].chunk_index,
+                            'total_chunks': chunk['metadata'].total_chunks,
+                            'start_char': chunk['metadata'].start_char,
+                            'end_char': chunk['metadata'].end_char,
+                            'word_count': chunk['metadata'].word_count,
+                            'page_number': chunk['metadata'].page_number,
+                            'section_title': chunk['metadata'].section_title,
+                            'semantic_density': chunk['metadata'].semantic_density
+                        }
+                        chunk_metadata.append(meta_dict)
+                        
                 num_chunks = len(chunks)
 
 
